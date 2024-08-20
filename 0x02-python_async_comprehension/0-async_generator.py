@@ -7,7 +7,7 @@ from typing import Generator
 '''Return type of generator by the generic type yield_type'''
 
 
-async def async_generator() -> Generator[int, None, None]:
+async def async_generator() -> Generator[float, None, None]:
     """loop 10 times, each time asynchronously wait 1 second,
     then yield a random number between 0 and 10"""
     for a in range(10):
