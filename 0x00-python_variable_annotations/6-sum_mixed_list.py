@@ -7,5 +7,6 @@ from typing import Union, List
 
 
 def sum_mixed_list(mxd_lst: List[Union[int, float]]) -> float:
-    temp = sum(mxd_lst)
+    temp = []
+    temp = float(sum(mxd_lst))
     return temp
