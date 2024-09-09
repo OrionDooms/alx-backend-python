@@ -3,7 +3,8 @@
 modules or parts of the application"""
 import unittest
 from parameterized import parameterized
-from utils import access_nested_map
+from utils import access_nested_map, get_json
+from unittest.mock import patch, Mock
 
 
 class TestAccessNestedMap(unittest.TestCase):
@@ -30,3 +31,27 @@ class TestAccessNestedMap(unittest.TestCase):
         with self.assertRaises(KeyError) as nest:
             access_nested_map(nested_map, path)
         self.assertTrue("'{}'".format(path[-1]) in str(nest.exception))
+
+
+class TestGetJson(unittest.TestCase):
+    """ The @parameterized.expand is used to provide multiple sets of
+    arguments to a test method
+    The @patch replaces the requests.get with a mock objectinside the
+    test method """
+    @parameterized.expand([
+                ("http://example.com", {"payload": True}),
+                ("http://holberton.io", {"payload": False}),
+                ])
+    @patch('utils.requests.get')
+    def test_get_json(self, test_url, test_payload, mock_get):
+        """Each test case, a Mock object is created, the requests.get
+        return value. The json of the mock object is set to return
+        the corresponding test_payload"""
+        a = Mock()
+        load = test_payload
+        url = test_url
+        a.json.return_value = load
+        mock_get.return_value = a
+        result = get_json(url)
+        mock_get.assert_called_once_with(url)
+        self.assertEqual(result, load)
