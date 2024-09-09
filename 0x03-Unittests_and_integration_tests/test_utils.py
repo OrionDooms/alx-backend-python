@@ -19,3 +19,14 @@ class TestAccessNestedMap(unittest.TestCase):
         path is a sequence of key that of keys that represent the path"""
         test = access_nested_map(nested_map, path)
         self.assertEqual(test, expected)
+
+    @parameterized.expand([
+        ({}, ["a"]),
+        ({"a": 1}, ["a", "b"]),
+    ])
+    def test_access_nested_map_exception(self, nested_map, path):
+        """This version of the test still ensures that a KeyError is raised
+        and the message includes the correct key"""
+        with self.assertRaises(KeyError) as nest:
+            access_nested_map(nested_map, path)
+        self.assertTrue("'{}'".format(path[-1]) in str(nest.exception))
