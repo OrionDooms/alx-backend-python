@@ -3,7 +3,7 @@
 modules or parts of the application"""
 import unittest
 from parameterized import parameterized
-from utils import access_nested_map, get_json
+from utils import memoize, access_nested_map, get_json
 from unittest.mock import patch, Mock
 
 
@@ -55,3 +55,35 @@ class TestGetJson(unittest.TestCase):
         result = get_json(url)
         mock_get.assert_called_once_with(url)
         self.assertEqual(result, load)
+
+
+class TestClass:
+    """TestClass has two methods"""
+
+    def a_method(self):
+        """a_method simply returns 42"""
+        return 42
+
+    @memoize
+    def a_property(self):
+        """a_property a method with @memoize means its result will be
+        cached after the first call"""
+        return self.a_method()
+
+
+class TestMemoize(unittest.TestCase):
+
+    @patch.object(TestClass, 'a_method', return_value=42)
+    def test_memoize(self, mock_a_method):
+        """obj = TestClass() create an instance of TestClass, data1 or data2
+        access a_property for the first time and this will invoke a_method
+        and cache the result."""
+        obj = TestClass()
+
+        data1 = obj.a_property
+        self.assertEqual(data1, 42)
+        mock_a_method.assert_called_once()
+
+        data2 = obj.a_property
+        self.assertEqual(data2, 42)
+        mock_a_method.assert_called_once()
